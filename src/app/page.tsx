@@ -1,9 +1,9 @@
-import NavigationBar from "@/components/Navigation";
-import Image from "next/image";
+import Home from "./home/page";
 
 export default function App() {
   return (
     <main>
+      <Home />
     </main>
   );
 }

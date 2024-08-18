@@ -69,7 +69,7 @@ export default function Posts() {
   return (
     <>
       {loading ? <span className="flex items-center justify-center my-auto h-dvh w-full">
-        <Loader className="animate-spin h-10 w-10" />
+        <Loader className="animate-spin h-10 w-10 text-blue-500" />
       </span>
         :
 

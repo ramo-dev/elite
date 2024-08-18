@@ -18,11 +18,17 @@ interface AuthState {
 const useAuthStore = create<AuthState>((set) => ({
   user: null,
 
+
   verify: () => {
     try {
-      const auth = JSON.parse(localStorage.getItem("jwt_token") || '{}');
-      if (auth && auth.model && auth.model.username) {
-        set({ user: { username: auth.model.username } });
+      const storedAuth = localStorage.getItem("pocketbase_auth");
+      if (storedAuth) {
+        const auth = JSON.parse(storedAuth);
+        if (auth?.model?.username) {
+          set({ user: { username: auth.model.username } });
+        } else {
+          set({ user: null });
+        }
       } else {
         set({ user: null });
       }
@@ -32,11 +38,11 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
+
   login: async (username, password) => {
     try {
       const authData = await pb.collection("users").authWithPassword(username, password);
       if (authData.token) {
-        localStorage.setItem("jwt_token", JSON.stringify(authData)); // Store the entire auth object
         set({ user: { username } });
         return { success: true, error: null };
       }

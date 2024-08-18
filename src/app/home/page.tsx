@@ -10,14 +10,30 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Image as ImageIcon,
+  Loader,
   Smile,
   Video,
 
 } from "lucide-react";
 import Sidebar from "./components/sidebar";
 import Posts from "./posts";
+import useAuthStore from "../Hooks/Auth";
 
-export default function Component() {
+export default function Home() {
+
+  const { user, verify, logout } = useAuthStore();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const verifyAndSetLoading = async () => {
+      verify();
+      setLoading(false);
+    };
+    verifyAndSetLoading();
+  }, [verify]);
+
+
+
   return (
     <div className="flex md:flex-row flex-col  min-h-dvh relative flex-wrap ">
       <main className="flex gap-6 md:p-6 p-2 relative justify-between flex-1 flex-wrap">
@@ -50,9 +66,20 @@ export default function Component() {
                       <span className="sr-only">Add feeling/activity</span>
                     </Button>
                   </div>
-                  <Button className="bg-primary text-primary-foreground px-4 py-2 rounded-md w-32">
-                    Post
-                  </Button>
+                  {loading ? <Loader className="animate-spin text-blue-500 h-9 w-9 mx-2" /> :
+                    <>
+                      {user ?
+                        <Button className="bg-primary text-primary-foreground px-4 py-2 rounded-md w-32">
+                          Post
+                        </Button> :
+                        <Link href="/login">
+                          <Button className="bg-primary text-primary-foreground px-4 py-2 rounded-md w-32">
+                            Login to post
+                          </Button>
+                        </Link>
+                      }
+                    </>
+                  }
                 </div>
               </div>
             </form>
