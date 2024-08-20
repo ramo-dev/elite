@@ -4,14 +4,18 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { SearchIcon, MessagesSquare, MailsIcon, MessageSquareShare, User, Settings, LogOut, BellIcon, Loader, PanelRightClose, LogIn, NotebookPen } from "lucide-react";
+import { SearchIcon, MessagesSquare, Settings, LogOut, BellIcon, Loader, PanelRightClose, LogIn, NotebookPen, Clover } from "lucide-react";
 import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import useAuthStore from "@/app/Hooks/Auth";
+import { useRouter } from "next/navigation";
+import Notifications from "@/app/u/notifications/Notifications";
+
 
 const NavigationBar = () => {
   const { user, verify, logout } = useAuthStore();
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const verifyAndSetLoading = async () => {
@@ -21,10 +25,15 @@ const NavigationBar = () => {
     verifyAndSetLoading();
   }, [verify]);
 
+  function handleLogout() {
+    logout();
+    router.replace("/")
+  }
+
   return (
     <header className="bg-primary-foreground px-2 md:px-8 h-16 flex items-center justify-between sticky top-0 z-10 text-black border-b">
       <Link href="/" className="flex items-center gap-2" prefetch={false}>
-        <MessageSquareShare className="w-8 h-8" />
+        <Clover className="w-8 h-8" />
         <span className="sr-only">EliteTech</span>
       </Link>
 
@@ -45,14 +54,13 @@ const NavigationBar = () => {
           {/* Icons on Desktop */}
           <div className="hidden sm:flex gap-2">
             {user && <>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <MessagesSquare className="w-5 h-5" />
-                <span className="sr-only">Messenger</span>
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <MailsIcon className="w-5 h-5" />
-                <span className="sr-only">Notifications</span>
-              </Button>
+              <Link href="/u/chat">
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <MessagesSquare className="w-5 h-5" />
+                  <span className="sr-only">Messenger</span>
+                </Button>
+              </Link>
+              <Notifications />
             </>}
 
             {/* Conditionally render based on authentication status */}
@@ -67,9 +75,9 @@ const NavigationBar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="p-0">
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                  <DropdownMenuItem><Link href="/u/profile">Profile</Link></DropdownMenuItem>
+                  <DropdownMenuItem><Link href="/u/settings">Settings</Link></DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
@@ -105,26 +113,30 @@ const NavigationBar = () => {
               <div className="space-y-5 py-4">
                 {user ? (
                   <>
-                    <Button variant="ghost" className="flex justify-start gap-2 w-full">
-                      <MessagesSquare className="w-6 h-6" />
-                      <span>Messages</span>
-                    </Button>
-                    <Button variant="ghost" className="flex justify-start gap-2 w-full">
-                      <BellIcon className="w-6 h-6" />
-                      <span>Notifications</span>
-                    </Button>
-                    <Button variant="ghost" className="flex justify-start gap-2 w-full">
-                      <User className="w-6 h-6" />
-                      <span>Profile</span>
-                    </Button>
-                    <Button variant="ghost" className="flex justify-start gap-2 w-full">
-                      <Settings className="w-6 h-6" />
-                      <span>Settings</span>
-                    </Button>
-                    <Button variant="ghost" className="flex justify-start gap-2 w-full" onClick={logout}>
-                      <LogOut className="w-6 h-6" />
-                      <span>Logout</span>
-                    </Button>
+                    <Link href="/u/profile">
+                      <Button variant="ghost" className="flex justify-start gap-2 w-full">
+                        <MessagesSquare className="w-6 h-6" />
+                        <span>Messages</span>
+                      </Button>
+                    </Link>
+                    <Link href="/u/profile">
+                      <Button variant="ghost" className="flex justify-start gap-2 w-full">
+                        <BellIcon className="w-6 h-6" />
+                        <span>Notifications</span>
+                      </Button>
+                    </Link>
+                    <Link href="/u/profile" >
+                      <Button variant="ghost" className="flex justify-start gap-2 w-full">
+                        <Settings className="w-6 h-6" />
+                        <span>Profile</span>
+                      </Button>
+                    </Link>
+                    <Link href="/">
+                      <Button variant="ghost" className="flex justify-start gap-2 w-full" onClick={handleLogout}>
+                        <LogOut className="w-6 h-6" />
+                        <span>Logout</span>
+                      </Button>
+                    </Link>
                   </>
                 ) : (
                   <>

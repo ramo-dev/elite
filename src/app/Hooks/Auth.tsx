@@ -2,8 +2,18 @@ import { create } from 'zustand';
 import { pb } from "../Auth/pocket";
 
 // Store types interface
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatar: string;
+  verified: boolean;
+  created: string;
+  updated: string;
+}
+
 interface AuthState {
-  user: { username: string } | null;
+  user: User | null;
   verify: () => void;
   login: (username: string, password: string) => Promise<{ success: boolean, error: string | null }>;
   logout: () => void;
@@ -18,14 +28,23 @@ interface AuthState {
 const useAuthStore = create<AuthState>((set) => ({
   user: null,
 
-
   verify: () => {
     try {
       const storedAuth = localStorage.getItem("pocketbase_auth");
       if (storedAuth) {
         const auth = JSON.parse(storedAuth);
         if (auth?.model?.username) {
-          set({ user: { username: auth.model.username } });
+          set({
+            user: {
+              id: auth.model.id,
+              username: auth.model.username,
+              email: auth.model.email,
+              avatar: auth.model.avatar,
+              verified: auth.model.verified,
+              created: auth.model.created,
+              updated: auth.model.updated,
+            }
+          });
         } else {
           set({ user: null });
         }
@@ -38,12 +57,21 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-
   login: async (username, password) => {
     try {
       const authData = await pb.collection("users").authWithPassword(username, password);
       if (authData.token) {
-        set({ user: { username } });
+        set({
+          user: {
+            id: authData.record.id,
+            username: authData.record.username,
+            email: authData.record.email,
+            avatar: authData.record.avatar,
+            verified: authData.record.verified,
+            created: authData.record.created,
+            updated: authData.record.updated,
+          }
+        });
         return { success: true, error: null };
       }
       return { success: false, error: "Invalid credentials." };
@@ -68,7 +96,6 @@ const useAuthStore = create<AuthState>((set) => ({
     try {
       const newUser = await pb.collection("users").create({ email, username, password, passwordConfirm });
       if (newUser.id) {
-        set({ user: { username } });
         return { success: true, error: null };
       }
       return { success: false, error: "Registration failed." };
@@ -80,4 +107,25 @@ const useAuthStore = create<AuthState>((set) => ({
   }
 }));
 
-export default useAuthStore;
+
+const useNotifications = create((set) => ({
+  notifications: [],
+
+  addNotification: (id) => set((state) => ({
+    notifications: [...state.notifications, id]
+  })),
+
+  removeNotification: (id) => set((state) => ({
+    notifications: state.notifications.filter(itm => itm !== id)
+  }))
+}));
+
+
+
+
+
+
+
+
+
+export default useAuthStore; useNotifications;

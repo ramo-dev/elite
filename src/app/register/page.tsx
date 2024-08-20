@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import useAuthStore from "../Hooks/Auth";
 import { useState } from "react";
 import { CircleAlert } from "lucide-react";
+import { useRouter } from "next/navigation"
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -31,6 +32,7 @@ export default function LoginForm() {
   });
 
   const { signUp } = useAuthStore();
+  const router = useRouter();
 
   // Handle authentication on form submission
   async function handleAuth() {
@@ -58,6 +60,7 @@ export default function LoginForm() {
         confirmPassword: "",
         other: ""
       });
+      router.replace("/login")
     }
 
     setErrors((prevErrs) => ({ ...prevErrs, other: result.error }))

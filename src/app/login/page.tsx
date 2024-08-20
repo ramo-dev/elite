@@ -56,7 +56,7 @@ export default function LoginForm() {
 
     if (result.success) {
       console.log("Login successful");
-      router.replace("/home"); // Use `replace` to navigate to the home page
+      router.replace("/"); // Use `replace` to navigate to the home page
       return result;
     }
 
